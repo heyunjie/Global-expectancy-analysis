@@ -29,13 +29,58 @@ unique(full$worldbankregion)
 ##                                    four_regions1 = 0,four_regions2 = 0, four_regions3 = 1: americas;
 ##                                    four_regions1 = 0,four_regions2 = 0, four_regions3 = 0: aisa
 
-## We set South Asia as reference category, worldbankregion1 = 1, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0: Europe & Central Asia;
-##                                          worldbankregion1 = 0, worldbankregion2 = 1, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0: Middle East & North Africa;
-##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 1, worldbankregion4 = 0, worldbankregion5 = 0: Sub-Saharan Africa;
-##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 1, worldbankregion5 = 0: Latin America & Caribbean;
-##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 1: East Asia & Pacific;
-##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0: South Asia;          
+## We set South Asia as reference category, worldbankregion1 = 1, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0, worldbankregion5 = 0: Europe & Central Asia;
+##                                          worldbankregion1 = 0, worldbankregion2 = 1, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0, worldbankregion5 = 0: Middle East & North Africa;
+##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 1, worldbankregion4 = 0, worldbankregion5 = 0, worldbankregion5 = 0: Sub-Saharan Africa;
+##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 1, worldbankregion5 = 0, worldbankregion5 = 0: Latin America & Caribbean;
+##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 1, worldbankregion5 = 0: East Asia & Pacific;
+##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0, worldbankregion5 = 1: North America;
+##                                          worldbankregion1 = 0, worldbankregion2 = 0, worldbankregion3 = 0, worldbankregion4 = 0, worldbankregion5 = 0, worldbankregion5 = 0: South Asia;          
 
+full$four_regions1 <- rep(0,length(full$country))
+full$four_regions2 <- rep(0,length(full$country))
+full$four_regions3 <- rep(0,length(full$country))
+full$worldbankregion1 <- rep(0,length(full$country))
+full$worldbankregion2 <- rep(0,length(full$country))
+full$worldbankregion3 <- rep(0,length(full$country))
+full$worldbankregion4 <- rep(0,length(full$country))
+full$worldbankregion5 <- rep(0,length(full$country))
+full$worldbankregion6 <- rep(0,length(full$country))
+
+for (i in 1:length(full$country)){
+    if (full$four_regions[i]=="europe"){
+        full$four_regions1[i] <- 1
+    }
+    else if(full$four_regions[i]=="africa"){
+        full$four_regions2[i] <- 1
+    }
+    else if(full$four_regions[i]=="americas"){
+        full$four_regions3[i] <- 1
+    }
+}
+
+for (i in 1:length(full$country)){
+    if (full$worldbankregion[i]=="Europe & Central Asia"){
+        full$worldbankregion1[i] <- 1
+    }
+    else if(full$worldbankregion[i]=="Middle East & North Africa"){
+        full$worldbankregion2[i] <- 1
+    }
+    else if(full$worldbankregion[i]=="Sub-Saharan Africa"){
+        full$worldbankregion3[i] <- 1
+    }
+    else if(full$worldbankregion[i]=="Latin America & Caribbean"){
+        full$worldbankregion4[i] <- 1
+    }
+    else if(full$worldbankregion[i]=="East Asia & Pacific"){
+        full$worldbankregion5[i] <- 1
+    }
+    else if(full$worldbankregion[i]=="North America"){
+        full$worldbankregion6[i] <- 1
+    }
+}
+
+full <- full[,-c(14,15)]
 
 
 
