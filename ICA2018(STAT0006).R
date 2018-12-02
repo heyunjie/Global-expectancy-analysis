@@ -1,4 +1,6 @@
-full <- read_excel("~/Desktop/2018STAT0006ICA/icadata.csv")
+install.packages("readxl")
+library(readxl)
+full <- read_excel("icadata.xlsx")
 View(full)
 summary(full)
 ## remove rows lacking life expectancy
@@ -81,6 +83,14 @@ for (i in 1:length(full$country)){
 }
 
 full <- full[,-c(14,15)]
+
+############################# We have cleaned the dataset, and need to move further to build the model######################
+## Covariate selection:
+
+
+
+
+
 
 
 
