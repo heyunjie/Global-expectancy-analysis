@@ -131,12 +131,50 @@ for (i in 1:length(full$country)){
     }
 }
 
-test_1 <- lm(full$lifeexp2018 ~ full$agri_2016  + full$broadband_2016 + full$mobile_2016 + full$child_mort_2018 + full$child_per_woman_2018 + full$income_pp_2018 + full$inflation_2017 + full$internet_2016 + full$self_employed_2018 + full$sl_emp_2017 + full$urban_pop_2017 + full$pop_dens_2018 
-             +        + full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6, data = full)
-test_2 <- lm(full$lifeexp2018 ~ full$agri_2016 + full$broadband_2016 + full$mobile_2016 + full$child_mort_2018 + full$child_per_woman_2018 + full$income_pp_2018 + full$inflation_2017 + full$internet_2016 + full$self_employed_2018 + full$sl_emp_2017 + full$urban_pop_2017 + full$pop_dens_2018 + full$four_regions1
-             +         + full$four_regions2 + full$four_regions3, data = full)
+## check for collinearity
+cor(na.omit(full[,c( "agri_2016","broadband_2016","mobile_2016","child_mort_2018","child_per_woman_2018","income_pp_2018","inflation_2017","internet_2016","self_employed_2018","urban_pop_2017", "pop_dens_2018")]))
+## we find that agr_2016&agri_2017; sel_emp_2017&self_employed_2018 are highly correlated with each other
+## "worldbankregion1","worldbankregion2","worldbankregion3", "worldbankregion4","worldbankregion5","worldbankregion6"
+## "four_regions1","four_regions2","four_regions3"
+plot(full[,c("broadband_2016","child_mort_2018","income_pp_2018","urban_pop_2017","agri_2016")])
+
+## Let's build the model
+# Model without categorical covariates:
+test_1_1 <- lm(full$lifeexp2018 ~ full$agri_2016  + full$broadband_2016 + full$mobile_2016 + full$child_mort_2018 + full$child_per_woman_2018 + full$income_pp_2018 + full$inflation_2017 + full$internet_2016 + full$self_employed_2018 + full$urban_pop_2017 + full$pop_dens_2018, data = full) 
+summary(test_1_1)
+test_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017)
+summary(test_1_2)
+test_1_2_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016)
+summary(test_1_2_1)   
+test_1_2_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$mobile_2016)
+summary(test_1_2_2)# mobile_2016 rejected
+test_1_2_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$child_per_woman_2018)
+summary(test_1_2_3)# full$child_per_woman_2018 rejected
+test_1_2_4 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$inflation_2017)
+summary(test_1_2_4)# inflation rejected
+test_1_2_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$internet_2016)
+summary(test_1_2_5)# internet_2016 rejected
+test_1_2_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$self_employed_2018)
+summary(test_1_2_5)# self_employed_2018 rejected
+
+# Model with categorical covariates: 
+test_2_1 <-  lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016)
+test_2_1_1<- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
+anova(test_2_1_1,test_2_1)
+vif(test_2_1_1) # It proves that there's no obvious collinearity bwtween covaraiates in test_2_1_1
+
+test_2_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
+anova(test_2_1,test_2_1_2)
+vif(test_2_1_2)
+
+test_2_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$four_regions1+full$four_regions2+full$four_regions3+full$agri_2016+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
+anova(test_2_1_1,test_2_1_3)
+vif(test_2_1_3) # " there are aliased coefficients in the model " it shows that there's perfect collinearity existing between worldbankregion and four_regions 
+
+# So the right model should be 
+m1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
+summary(m1)
 
 
-summary(test_1)
 
-summary(test_2)
+
