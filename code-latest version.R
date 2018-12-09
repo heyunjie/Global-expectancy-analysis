@@ -134,31 +134,40 @@ for (i in 1:length(full$country)){
 ## check for collinearity
 cor(na.omit(full[,c( "agri_2016","broadband_2016","mobile_2016","child_mort_2018","child_per_woman_2018","income_pp_2018","inflation_2017","internet_2016","self_employed_2018","urban_pop_2017", "pop_dens_2018")]))
 ## we find that agr_2016&agri_2017; sel_emp_2017&self_employed_2018 are highly correlated with each other
-## "worldbankregion1","worldbankregion2","worldbankregion3", "worldbankregion4","worldbankregion5","worldbankregion6"
-## "four_regions1","four_regions2","four_regions3"
 plot(full[,c("broadband_2016","child_mort_2018","income_pp_2018","urban_pop_2017","agri_2016")])
+
 
 ## Let's build the model
 # Model without categorical covariates:
 test_1_1 <- lm(full$lifeexp2018 ~ full$agri_2016  + full$broadband_2016 + full$mobile_2016 + full$child_mort_2018 + full$child_per_woman_2018 + full$income_pp_2018 + full$inflation_2017 + full$internet_2016 + full$self_employed_2018 + full$urban_pop_2017 + full$pop_dens_2018, data = full) 
 summary(test_1_1)
+
 test_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017)
 summary(test_1_2)
+
 test_1_2_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016)
-summary(test_1_2_1)   
+summary(test_1_2_1) 
+
 test_1_2_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$mobile_2016)
 summary(test_1_2_2)# mobile_2016 rejected
+
 test_1_2_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$child_per_woman_2018)
 summary(test_1_2_3)# full$child_per_woman_2018 rejected
+
 test_1_2_4 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$inflation_2017)
 summary(test_1_2_4)# inflation rejected
+
 test_1_2_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$internet_2016)
 summary(test_1_2_5)# internet_2016 rejected
+
 test_1_2_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$self_employed_2018)
 summary(test_1_2_5)# self_employed_2018 rejected
 
 # Model with categorical covariates: 
 test_2_1 <-  lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016)
+vif(test_2_1)
+anova(test_2_1,test_1_1)
+
 test_2_1_1<- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
 anova(test_2_1_1,test_2_1)
 vif(test_2_1_1) # It proves that there's no obvious collinearity bwtween covaraiates in test_2_1_1
@@ -171,9 +180,39 @@ test_2_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+ful
 anova(test_2_1_1,test_2_1_3)
 vif(test_2_1_3) # " there are aliased coefficients in the model " it shows that there's perfect collinearity existing between worldbankregion and four_regions 
 
-# So the right model should be 
+# Model with interaction term
+test_3_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
+
+test_3_1_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$broadband_2016+full$four_regions2*full$broadband_2016+full$four_regions3*full$broadband_2016)
+anova(test_3_1,test_3_1_1) 
+summary(test_3_1_1) ## reject the interaction term with broadband_2016
+
+test_3_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$child_mort_2018+full$four_regions2*full$child_mort_2018+full$four_regions3*full$child_mort_2018)
+anova(test_3_1_2,test_3_1)
+summary(test_3_1_2) ## reject the interaction term with child_mort_2018
+
+test_3_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$income_pp_2018+full$four_regions2*full$income_pp_2018+full$four_regions3*full$income_pp_2018)
+anova(test_3_1,test_3_1_3)
+summary(test_3_1_3) ## reject the interaction term with income_pp_2018
+
+test_3_1_4 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$urban_pop_2017+full$four_regions2*full$urban_pop_2017+full$four_regions3*full$urban_pop_2017)
+anova(test_3_1,test_3_1_4)
+summary(test_3_1_4) ## we should consider to retain it 
+
+test_3_1_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$agri_2016+full$four_regions2*full$agri_2016+full$four_regions3*full$agri_2016)
+anova(test_3_1,test_3_1_5)
+summary(test_3_1_5) ## reject the interaction term with agri_2016
+
+
+## Now we have two choices
+# choice1: model without interaction terms
 m1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
 summary(m1)
+# choice2: model with interaction terms
+m2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$urban_pop_2017+full$four_regions2*full$urban_pop_2017+full$four_regions3*full$urban_pop_2017)
+summary(m2)
+
+## Model checking
 
 
 
