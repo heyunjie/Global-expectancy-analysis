@@ -132,6 +132,13 @@ for (i in 1:length(full$country)){
 }
 
 ## check for collinearity
+a <- c("agri_2016","broadband_2016","mobile_2016","child_mort_2018","child_per_woman_2018","income_pp_2018","inflation_2017","internet_2016","self_employed_2018","urban_pop_2017", "pop_dens_2018")
+for (i in 1:length(a)){
+    for (j in 1: length(a)){
+    plot(full[,c(a[i],a[j])])
+    }
+}
+plot(full[,c("agri_2016","broadband_2016","mobile_2016","child_mort_2018","child_per_woman_2018","income_pp_2018","inflation_2017","internet_2016","self_employed_2018","urban_pop_2017", "pop_dens_2018")])
 cor(na.omit(full[,c( "agri_2016","broadband_2016","mobile_2016","child_mort_2018","child_per_woman_2018","income_pp_2018","inflation_2017","internet_2016","self_employed_2018","urban_pop_2017", "pop_dens_2018")]))
 ## we find that agr_2016&agri_2017; sel_emp_2017&self_employed_2018 are highly correlated with each other
 plot(full[,c("broadband_2016","child_mort_2018","income_pp_2018","urban_pop_2017","agri_2016")])
@@ -141,79 +148,57 @@ plot(full[,c("broadband_2016","child_mort_2018","income_pp_2018","urban_pop_2017
 # Model without categorical covariates:
 test_1_1 <- lm(full$lifeexp2018 ~ full$agri_2016  + full$broadband_2016 + full$mobile_2016 + full$child_mort_2018 + full$child_per_woman_2018 + full$income_pp_2018 + full$inflation_2017 + full$internet_2016 + full$self_employed_2018 + full$urban_pop_2017 + full$pop_dens_2018, data = full) 
 summary(test_1_1)
+vif(test_1_1)
 
 test_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017)
 summary(test_1_2)
-
-test_1_2_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016)
-summary(test_1_2_1) 
-
-test_1_2_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$mobile_2016)
-summary(test_1_2_2)# mobile_2016 rejected
-
-test_1_2_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$child_per_woman_2018)
-summary(test_1_2_3)# full$child_per_woman_2018 rejected
-
-test_1_2_4 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$inflation_2017)
-summary(test_1_2_4)# inflation rejected
-
-test_1_2_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$internet_2016)
-summary(test_1_2_5)# internet_2016 rejected
-
-test_1_2_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$self_employed_2018)
-summary(test_1_2_5)# self_employed_2018 rejected
+vif(test_1_2)
 
 # Model with categorical covariates: 
-test_2_1 <-  lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016)
+test_2_1 <-  lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017)
 vif(test_2_1)
-anova(test_2_1,test_1_1)
 
-test_2_1_1<- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
+test_2_1_1<- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$four_regions1+full$four_regions2+full$four_regions3)
 anova(test_2_1_1,test_2_1)
-vif(test_2_1_1) # It proves that there's no obvious collinearity bwtween covaraiates in test_2_1_1
+vif(test_2_1_1) 
 
-test_2_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
+test_2_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
 anova(test_2_1,test_2_1_2)
-vif(test_2_1_2)
+vif(test_2_1_2)# It proves that there's no obvious collinearity bwtween covaraiates in test_2_1_2
 
 test_2_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$four_regions1+full$four_regions2+full$four_regions3+full$agri_2016+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
 anova(test_2_1_1,test_2_1_3)
 vif(test_2_1_3) # " there are aliased coefficients in the model " it shows that there's perfect collinearity existing between worldbankregion and four_regions 
 
 # Model with interaction term
-test_3_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
+test_3_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
 
-test_3_1_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$broadband_2016+full$four_regions2*full$broadband_2016+full$four_regions3*full$broadband_2016)
-anova(test_3_1,test_3_1_1) 
-summary(test_3_1_1) ## reject the interaction term with broadband_2016
+test_3_1_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$broadband_2016 + full$worldbankregion2*full$broadband_2016 + full$worldbankregion3*full$broadband_2016 + full$worldbankregion4*full$broadband_2016 + full$worldbankregion5*full$broadband_2016 + full$worldbankregion6*full$broadband_2016)
+anova(test_3_1,test_3_1_1) #significant
 
-test_3_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$child_mort_2018+full$four_regions2*full$child_mort_2018+full$four_regions3*full$child_mort_2018)
-anova(test_3_1_2,test_3_1)
-summary(test_3_1_2) ## reject the interaction term with child_mort_2018
+test_3_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$child_mort_2018 + full$worldbankregion2*full$child_mort_2018 + full$worldbankregion3*full$child_mort_2018 + full$worldbankregion4*full$child_mort_2018 + full$worldbankregion5*full$child_mort_2018 + full$worldbankregion6*full$child_mort_2018)
+anova(test_3_1,test_3_1_2) #sinificant
 
-test_3_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$income_pp_2018+full$four_regions2*full$income_pp_2018+full$four_regions3*full$income_pp_2018)
-anova(test_3_1,test_3_1_3)
-summary(test_3_1_3) ## reject the interaction term with income_pp_2018
+test_3_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$income_pp_2018 + full$worldbankregion2*full$income_pp_2018 + full$worldbankregion3*full$income_pp_2018 + full$worldbankregion4*full$income_pp_2018 + full$worldbankregion5*full$income_pp_2018 + full$worldbankregion6*full$income_pp_2018)
+anova(test_3_1,test_3_1_3) #not significant
 
-test_3_1_4 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$urban_pop_2017+full$four_regions2*full$urban_pop_2017+full$four_regions3*full$urban_pop_2017)
-anova(test_3_1,test_3_1_4)
-summary(test_3_1_4) ## we should consider to retain it 
+test_3_1_4 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$urban_pop_2017 + full$worldbankregion2*full$urban_pop_2017 + full$worldbankregion3*full$urban_pop_2017 + full$worldbankregion4*full$urban_pop_2017 + full$worldbankregion5*full$urban_pop_2017 + full$worldbankregion6*full$urban_pop_2017)
+anova(test_3_1,test_3_1_4) #not significant
 
-test_3_1_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$agri_2016+full$four_regions2*full$agri_2016+full$four_regions3*full$agri_2016)
+#combine broadband_2016 and child_mort
+test_3_1_5 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$broadband_2016 + full$worldbankregion2*full$broadband_2016 + full$worldbankregion3*full$broadband_2016 + full$worldbankregion4*full$broadband_2016 + full$worldbankregion5*full$broadband_2016 + full$worldbankregion6*full$broadband_2016+ full$worldbankregion1*full$child_mort_2018 + full$worldbankregion2*full$child_mort_2018 + full$worldbankregion3*full$child_mort_2018 + full$worldbankregion4*full$child_mort_2018 + full$worldbankregion5*full$child_mort_2018 + full$worldbankregion6*full$child_mort_2018)
 anova(test_3_1,test_3_1_5)
-summary(test_3_1_5) ## reject the interaction term with agri_2016
-
 
 ## Now we have two choices
 # choice1: model without interaction terms
-m1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3)
+m1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
 summary(m1)
 # choice2: model with interaction terms
-m2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$agri_2016+full$four_regions1+full$four_regions2+full$four_regions3+full$four_regions1*full$urban_pop_2017+full$four_regions2*full$urban_pop_2017+full$four_regions3*full$urban_pop_2017)
+m2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$broadband_2016 + full$worldbankregion2*full$broadband_2016 + full$worldbankregion3*full$broadband_2016 + full$worldbankregion4*full$broadband_2016 + full$worldbankregion5*full$broadband_2016 + full$worldbankregion6*full$broadband_2016+ full$worldbankregion1*full$child_mort_2018 + full$worldbankregion2*full$child_mort_2018 + full$worldbankregion3*full$child_mort_2018 + full$worldbankregion4*full$child_mort_2018 + full$worldbankregion5*full$child_mort_2018 + full$worldbankregion6*full$child_mort_2018)
 summary(m2)
 
 ## Model checking
-
+##  agri_2016 & self_employed_2018; broadband_2016 & internet_2016 ; child_mort_2018 & child_per_woman_2018 & internet_2016 ;
 
 
 
