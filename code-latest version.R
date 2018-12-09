@@ -175,9 +175,11 @@ test_3_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$
 
 test_3_1_1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$broadband_2016 + full$worldbankregion2*full$broadband_2016 + full$worldbankregion3*full$broadband_2016 + full$worldbankregion4*full$broadband_2016 + full$worldbankregion5*full$broadband_2016 + full$worldbankregion6*full$broadband_2016)
 anova(test_3_1,test_3_1_1) #significant
+summary(test_3_1_1)
 
 test_3_1_2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$child_mort_2018 + full$worldbankregion2*full$child_mort_2018 + full$worldbankregion3*full$child_mort_2018 + full$worldbankregion4*full$child_mort_2018 + full$worldbankregion5*full$child_mort_2018 + full$worldbankregion6*full$child_mort_2018)
 anova(test_3_1,test_3_1_2) #sinificant
+summary(test_3_1_2)
 
 test_3_1_3 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$income_pp_2018 + full$worldbankregion2*full$income_pp_2018 + full$worldbankregion3*full$income_pp_2018 + full$worldbankregion4*full$income_pp_2018 + full$worldbankregion5*full$income_pp_2018 + full$worldbankregion6*full$income_pp_2018)
 anova(test_3_1,test_3_1_3) #not significant
@@ -192,13 +194,34 @@ anova(test_3_1,test_3_1_5)
 ## Now we have two choices
 # choice1: model without interaction terms
 m1 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6)
-summary(m1)
+
 # choice2: model with interaction terms
 m2 <- lm(full$lifeexp2018 ~ full$broadband_2016+full$child_mort_2018+full$income_pp_2018+full$urban_pop_2017+full$worldbankregion1 + full$worldbankregion2 + full$worldbankregion3 + full$worldbankregion4 + full$worldbankregion5 + full$worldbankregion6+ full$worldbankregion1*full$broadband_2016 + full$worldbankregion2*full$broadband_2016 + full$worldbankregion3*full$broadband_2016 + full$worldbankregion4*full$broadband_2016 + full$worldbankregion5*full$broadband_2016 + full$worldbankregion6*full$broadband_2016+ full$worldbankregion1*full$child_mort_2018 + full$worldbankregion2*full$child_mort_2018 + full$worldbankregion3*full$child_mort_2018 + full$worldbankregion4*full$child_mort_2018 + full$worldbankregion5*full$child_mort_2018 + full$worldbankregion6*full$child_mort_2018)
-summary(m2)
 
 ## Model checking
-##  agri_2016 & self_employed_2018; broadband_2016 & internet_2016 ; child_mort_2018 & child_per_woman_2018 & internet_2016 ;
+# departures from linearity
+plot(log(full$broadband_2016),full$lifeexp2018)
+abline(lm(full$lifeexp2018~log(full$broadband_2016)))
+
+plot(full$child_mort_2018,full$lifeexp2018)
+abline(lm(full$lifeexp2018~full$child_mort_2018))
+
+plot(log(full$income_pp_2018),full$lifeexp2018)
+abline(lm(full$lifeexp2018~log(full$income_pp_2018)))
+
+plot(full$urban_pop_2017,full$lifeexp2018)
+abline(lm(full$lifeexp2018~full$urban_pop_2017))
+
+# departures from homocedasticity
+plot(predict(m2),rstandard(m2))
+abline(lm(rstandard(m2)~predict(m2)))
+
+# departures from normality
+plot(m2) # look at Normal QQ
+
+
+
+
 
 
 
